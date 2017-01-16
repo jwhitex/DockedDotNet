@@ -1,0 +1,28 @@
+version: '2'
+
+services:
+  nginx:
+    build: ./nginx-img     
+    image: "nginxcust:${APP_IMAGE_TAG}"
+    links:
+      - dotnet1:dotnet1
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ${NGINX_LOGS}:${NGINX_LOGS}
+      - ${NGINX_SSL_HOST}:${NGINX_SSL}
+      - ${NGINX_CONFIG_HOST}:${NGINX_CONFIG}
+    environment: 
+      - APP_PORT
+      - NGINX_LOGS
+      - NGINX_SSL
+      - NGINX_CONFIG
+      - NGINX_HOST
+      - DOLLAR
+    command: /bin/bash -c "envsubst < ${NGINX_CONFIG}/nginx_app.template > ${NGINX_CONFIG}/nginx.conf && nginx -c ${NGINX_CONFIG}/nginx.conf -g 'daemon off;'"
+  dotnet1:
+    build: ./app-img
+    image: "${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
+    ports:
+      - "${APP_PORT}"
