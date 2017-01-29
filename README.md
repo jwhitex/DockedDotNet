@@ -37,6 +37,8 @@ Environment Settings
     - APP_IMAGE_TAG (=v0.1)
     
     - APP_PORT (=30000)
+
+    - APP_LOG_PATH
    
     - NGINX_LOGS (=/var/log/nginx)
     
@@ -51,3 +53,13 @@ Environment Settings
     - NGINX_HOST (hostname i.e. =example.com)
   
     - DOLLAR=$ (hack..)
+
+
+Gen SSL crt for Testing
+-----------------------
+
+# Use 'localhost' for the 'Common name'
+openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.key -out localhost.crt
+
+# Add the cert to your keychain
+open localhost.crt

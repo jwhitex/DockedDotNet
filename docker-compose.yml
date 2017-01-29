@@ -24,5 +24,7 @@ services:
   dotnet1:
     build: ./app-img
     image: "${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
+    volumes:
+      - ${APP_LOG_PATH}:${APP_LOG_PATH}
     ports:
       - "${APP_PORT}"

@@ -3,6 +3,10 @@ worker_processes 1;
 #error_log ${NGINX_LOGS}/app_proxy.log error;
 error_log ${NGINX_LOGS}/app_proxy.log debug;
 
+events {
+  worker_connections  4096;  ## Default: 1024
+}
+
 http {
     
     #include    /etc/nginx/proxy.conf;
@@ -46,8 +50,10 @@ http {
         ssl_ecdh_curve secp384r1;
         ssl_session_cache shared:SSL:10m;
         ssl_session_tickets off;
-        ssl_stapling on; #ensure your cert is capable
-        ssl_stapling_verify on; #ensure your cert is capable
+
+        # todo: turn this on..
+        #ssl_stapling on; #ensure your cert is capable
+        #ssl_stapling_verify on; #ensure your cert is capable
         ssl_prefer_server_ciphers on;
 
         add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
