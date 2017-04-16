@@ -10,7 +10,7 @@ services:
       - "443:443"
       - "80:80"
     volumes:
-      - ${NGINX_LOGS}:${NGINX_LOGS}
+      - ${NGINX_LOGS_HOST}:${NGINX_LOGS}
       - ${NGINX_SSL_HOST}:${NGINX_SSL}
       - ${NGINX_CONFIG_HOST}:${NGINX_CONFIG}
     environment: 
@@ -25,6 +25,6 @@ services:
     build: ./app-img
     image: "${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
     volumes:
-      - ${APP_LOG_PATH}:${APP_LOG_PATH}
-    ports:
-      - "${APP_PORT}"
+      - ${APP_LOG_PATH_HOST}:${APP_LOG_PATH}
+    environment:
+      - NODE_ENV

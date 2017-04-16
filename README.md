@@ -63,3 +63,12 @@ openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.ke
 
 # Add the cert to your keychain
 open localhost.crt
+
+Testing
+-------
+
+Change docker-compose section -
+
+    ports:
+      - "5000:443"
+      - "5001:80"
