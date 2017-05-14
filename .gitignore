@@ -1,11 +1,12 @@
 */crt/**
-*/out/**
+*/README.html/**
+
 .env
 .DS_Store
 
 nginx-img/log/**
 nginx-img/conf/nginx.conf
 app-img/log/**
+app-img/out/**
 
 *.log
-

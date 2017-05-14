@@ -10,12 +10,14 @@ events {
 http {
     
     #include    /etc/nginx/proxy.conf;
-    #limit_req_zone $binary_remote_addr zone=one:10m rate=5r/s;
+    #limit_req_zone ${DOLLAR}binary_remote_addr zone=one:10m rate=5r/s;
     server_tokens off;
 
     #sendfile on;
-    keepalive_timeout 29; # Adjust to the lowest possible value that makes sense for your use case.
-    client_body_timeout 10; client_header_timeout 10; send_timeout 10;
+    keepalive_timeout 20; # Adjust to the lowest possible value that makes sense for your use case.
+    client_body_timeout 10; 
+    client_header_timeout 10; 
+    send_timeout 10;
 
     # ssl optimization
     ssl_session_cache  shared:SSL:10m;
@@ -41,11 +43,9 @@ http {
         ssl_certificate_key       ${NGINX_SSL}/${NGINX_HOST}.key;
 
         # SSL configuration
+        # Pulled from https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction
         ssl on;
         ssl_protocols TLSv1.1 TLSv1.2;
-        #ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
-        #pulled from https://docs.microsoft.com/en-us/aspnet/core/publishing/linuxproduction
-        #add additional options later..
         ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH";
         ssl_ecdh_curve secp384r1;
         ssl_session_cache shared:SSL:10m;
@@ -62,9 +62,9 @@ http {
 
         # would like to use transparent flag on proxy_bind
         location / {
-            proxy_pass          http://dotnet1:${APP_PORT};
-            proxy_bind          ${DOLLAR}server_addr;
-            proxy_read_timeout  90;
+            proxy_pass              http://dotnet1:${APP_PORT};
+            proxy_bind              ${DOLLAR}server_addr;
+            proxy_read_timeout      90;
             proxy_set_header        Host ${DOLLAR}host;
             proxy_set_header        X-Real-IP ${DOLLAR}remote_addr;
             proxy_set_header        X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;

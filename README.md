@@ -1,59 +1,90 @@
-======================
-My Web App Composition
-======================
+=============================
+Docker Application Deployment
+=============================
 
-For budget builds...
+Overview
+========
 
-Procedure
-=========
+This is a production ready docker deployment setup for an .aspnetcore application hosted behind an nginx proxy. The .aspnetcore application is assumed to depend on node (see the app-img Dockerfile).
 
-Publish App -
+Getting Started
+===============
 
-`> dotnet publish [...]/project.json -o [...]/app-img/out -c Release`
+Create an .env file at the repo root directory. This is used by docker-compose.
 
-Move Files (ci noob?) -
+Add the following to the file (change at your discretion):
 
-`> duck --password **** --upload sftp://[user]@[host]:[port]/[path] C:\[path-to-repo]` 
+```
+APP_IMAGE_REPO=myapp
+APP_IMAGE_TAG=v0.1
+APP_PORT=5000
+APP_LOG_PATH=/var/log/dotnet
+APP_LOG_PATH_HOST=./app-img/log
 
-.. note:: windows is \??
+NODE_ENV=production
 
-On remote host -
+DOLLAR=$
 
-`> cd [path] && docker-compose up -d`
+NGINX_HOST=localhost
+NGINX_LOGS=/var/log/nginx
+NGINX_SSL=/etc/nginx/ssl
+NGINX_CONFIG=/etc/nginx/conf
 
-Files not in repo:
-    - .env
-    - ./nginx-img/crt
-    - ./app-img/out
+NGINX_SSL_HOST=./nginx-img/crt
+NGINX_LOGS_HOST=./nginx-img/log
+NGINX_CONFIG_HOST=./nginx-img/conf
 
-Environment Settings
-====================
+```
 
-./.env
--------
-    
-    - APP_IMAGE_REPO (=myapp)
-    
-    - APP_IMAGE_TAG (=v0.1)
-    
-    - APP_PORT (=30000)
+.. note:: $ is a hack
 
-    - APP_LOG_PATH
-   
-    - NGINX_LOGS (=/var/log/nginx)
-    
-    - NGINX_SSL (=path)
-    
-    - NGINX_SSL_HOST (=path)
-    
-    - NGINX_CONFIG (=/etc/nginx/conf)
-    
-    - NGINX_CONFIG_HOST (=./nginx-img/conf)
 
-    - NGINX_HOST (hostname i.e. =example.com)
+Publish your dotnet application to the app-img directory with the following command. Be sure to use absolute paths. 
+*See Issue https://github.com/dotnet/cli/issues/3833*
+
+    - `> dotnet publish [...]/project.json -o [...]/app-img/out -c Release`
+
+Change the ./app-img/Dockerfile to run your application. The default name is "Program.dll". Change it to "MyApp.dll" etc..
+
+Now you're all set to test your app on your local machine. See testing section for additional steps you need to take to test like generating a crt and key.
+
+
+Deployement
+-----------
+
+It is assumed that you have docker and docker-compose installed and configured on a remote host.
+
+The following environment variables should be set in your shell when using publish.sh:
+
+```
+GROWLIDK_DOMAIN=myapp.com
+GROWLIDK_REMOTE_USERNAME=remote_username
+GROWLIDK_REMOTE_ADDRESS=remote_address:remote_port
+GROWLIDK_REMOTE_HOME="/home/$GROWLIDK_REMOTE_USERNAME/app"
+```
+
+Change value in the .env when ready to deploy.
   
-    - DOLLAR=$ (hack..)
+    - NGINX_HOST=myapp.com
 
+Add your crt and key file for the domain to the /nginx-img/crt folder.
+
+Move Files (requires duck cli tool):
+
+    - `bash publish.sh` 
+
+.. note:: Script is for macOS.
+
+On remote host:
+
+    - `> cd [path] && docker-compose up -d`
+
+
+Now your all set! IF all went well and your app should be running and all should be well.
+
+
+Testing
+-------
 
 Gen SSL crt for Testing
 -----------------------
@@ -64,11 +95,20 @@ openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.ke
 # Add the cert to your keychain
 open localhost.crt
 
-Testing
--------
+Change:
 
-Change docker-compose section -
+    - .env : NGINX_HOST=localhost
 
-    ports:
-      - "5000:443"
-      - "5001:80"
+
+Other Notes
+-----------
+
+Files required but not in repo:
+    
+    - .env
+
+    - ./nginx-img/crt (crt and key)
+
+    - ./app-img/out  (your application)
+
+

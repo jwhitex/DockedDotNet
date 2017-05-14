@@ -11,7 +11,5 @@ WORKDIR /home/local/app
 
 COPY out .
 
-#EXPOSE 5000/tcp
-
 ENTRYPOINT ["dotnet", "Program.dll"]
 
