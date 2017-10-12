@@ -4,7 +4,7 @@
 
 ## Overview
 
-This is a production ready docker deployment setup for an Asp.Net Core application hosted behind an Nginx reverse proxy. It is assumed that the Asp.Net Core application to depend on node (see the app-img Dockerfile).
+This is a docker deployment setup for an Asp.Net Core application hosted behind an Nginx reverse proxy. It is assumed that the Asp.Net Core application depends on node (see the app-img Dockerfile).
 
 # Getting Started
 
@@ -36,7 +36,6 @@ NGINX_CONFIG_HOST=./nginx-img/conf
 
 `note: DOLLAR=$ is a hack`
 
-
 Publish your dotnet application to the app-img directory with the following command. Be sure to use absolute paths. 
 *See Issue https://github.com/dotnet/cli/issues/3833*
 
@@ -46,9 +45,7 @@ Change the ./app-img/Dockerfile to run your application. The default name is "Pr
 
 Now you're all set to test your app on your local machine. See testing section for additional steps you need to take to test, e.g. generating a crt and key.
 
-
 ## Deployment
-
 
 It is assumed that you have docker and docker-compose installed and configured on a remote host.
 
@@ -77,7 +74,6 @@ Move Files (requires duck cli tool):
 
 On remote host:
 
-
     $ cd [path] && docker-compose up -d
 
 
@@ -85,13 +81,13 @@ Now your all set! If all went well, good job. If not, don't frets. Search it out
 
 ## Testing
 
-### Gen x509 cert for Testing SSL
+### Gen cert for Testing SSL
 
 Use 'localhost' for the 'Common name'
 
     $ openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.key -out localhost.crt
 
-Add the cert to your keychain
+Add the Cert to your keychain
 
     $ open localhost.crt
 
