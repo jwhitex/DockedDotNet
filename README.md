@@ -1,14 +1,12 @@
-=============================
-Docker Application Deployment
-=============================
 
-Overview
-========
+# Docker Nginx/Asp.Net Application Deployment
 
-This is a production ready docker deployment setup for an .aspnetcore application hosted behind an nginx proxy. The .aspnetcore application is assumed to depend on node (see the app-img Dockerfile).
 
-Getting Started
-===============
+## Overview
+
+This is a production ready docker deployment setup for an Asp.Net Core application hosted behind an Nginx reverse proxy. It is assumed that the Asp.Net Core application to depend on node (see the app-img Dockerfile).
+
+# Getting Started
 
 Create an .env file at the repo root directory. This is used by docker-compose.
 
@@ -36,79 +34,80 @@ NGINX_CONFIG_HOST=./nginx-img/conf
 
 ```
 
-.. note:: $ is a hack
+`note: DOLLAR=$ is a hack`
 
 
 Publish your dotnet application to the app-img directory with the following command. Be sure to use absolute paths. 
 *See Issue https://github.com/dotnet/cli/issues/3833*
 
-    - `> dotnet publish [...]/project.json -o [...]/app-img/out -c Release`
+    $ dotnet publish /path/to/your/project.json -o /path/to/this/repo/app-img/out -c Release
 
 Change the ./app-img/Dockerfile to run your application. The default name is "Program.dll". Change it to "MyApp.dll" etc..
 
-Now you're all set to test your app on your local machine. See testing section for additional steps you need to take to test like generating a crt and key.
+Now you're all set to test your app on your local machine. See testing section for additional steps you need to take to test, e.g. generating a crt and key.
 
 
-Deployement
------------
+## Deployment
+
 
 It is assumed that you have docker and docker-compose installed and configured on a remote host.
 
 The following environment variables should be set in your shell when using publish.sh:
 
 ```
-GROWLIDK_DOMAIN=myapp.com
-GROWLIDK_REMOTE_USERNAME=remote_username
-GROWLIDK_REMOTE_ADDRESS=remote_address:remote_port
-GROWLIDK_REMOTE_HOME="/home/$GROWLIDK_REMOTE_USERNAME/app"
+DOCKEDDOTNET_DOMAIN=myapp.com
+DOCKEDDOTNET_REMOTE_USERNAME=remote_username
+DOCKEDDOTNET_REMOTE_ADDRESS=remote_address:remote_port
+DOCKEDDOTNET_REMOTE_HOME="/home/$GROWLIDK_REMOTE_USERNAME/app"
 ```
 
-Change value in the .env when ready to deploy.
-  
-    - NGINX_HOST=myapp.com
+Change value in .env when ready to deploy.
+
+    NGINX_HOST=myapp.com
 
 Add your crt and key file for the domain to the /nginx-img/crt folder.
 
 Move Files (requires duck cli tool):
 
-    - `bash publish.sh` 
 
-.. note:: Script is for macOS.
+    $ bash publish.sh` 
+
+
+`note: Script works on macOS.`
 
 On remote host:
 
-    - `> cd [path] && docker-compose up -d`
+
+    $ cd [path] && docker-compose up -d
 
 
-Now your all set! IF all went well and your app should be running and all should be well.
+Now your all set! If all went well, good job. If not, don't frets. Search it out! :)
+
+## Testing
+
+### Gen x509 cert for Testing SSL
+
+Use 'localhost' for the 'Common name'
+
+    $ openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.key -out localhost.crt
+
+Add the cert to your keychain
+
+    $ open localhost.crt
+
+Change value in .env:
+
+    NGINX_HOST=localhost
 
 
-Testing
--------
-
-Gen SSL crt for Testing
------------------------
-
-# Use 'localhost' for the 'Common name'
-openssl req -x509 -sha256 -nodes -newkey rsa:2048 -days 365 -keyout localhost.key -out localhost.crt
-
-# Add the cert to your keychain
-open localhost.crt
-
-Change:
-
-    - .env : NGINX_HOST=localhost
-
-
-Other Notes
------------
+## Other Notes
 
 Files required but not in repo:
     
     - .env
 
-    - ./nginx-img/crt (crt and key)
+    - ./nginx-img/crt/mysite.crt (crt and key)
 
-    - ./app-img/out  (your application)
+    - ./app-img/out/ (your application)
 
 
